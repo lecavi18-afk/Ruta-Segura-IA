@@ -1,14 +1,12 @@
-
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
-<meta charset="utf-8"/>
-<title>RutaSegura AI</title>
-<style>
+    <meta charset="UTF-8">
+    <title>RutaSegura AI</title>
+    <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f4f4f4;
+            background-color: #f4f4f4;
             margin: 0;
             padding: 0;
         }
@@ -17,7 +15,7 @@
             margin: 40px auto;
             background: #fff;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             overflow: hidden;
         }
         .chat-header {
@@ -30,23 +28,18 @@
             padding: 20px;
             height: 400px;
             overflow-y: auto;
-            background: #f9f9f9;
+            background: #fafafa;
         }
         .chat-message {
             margin-bottom: 15px;
-            padding: 10px 15px;
-            border-radius: 20px;
-            max-width: 80%;
-            clear: both;
         }
         .user-message {
-            background: #dcf8c6;
-            float: right;
             text-align: right;
+            color: #333;
         }
         .bot-message {
-            background: #e2e2e2;
-            float: left;
+            text-align: left;
+            color: #007bff;
         }
         .chat-input {
             display: flex;
@@ -57,91 +50,65 @@
         .chat-input input {
             flex: 1;
             padding: 10px;
+            font-size: 16px;
             border: 1px solid #ccc;
-            border-radius: 20px;
-            margin-right: 10px;
+            border-radius: 4px;
         }
         .chat-input button {
-            padding: 10px 20px;
-            border: none;
+            padding: 10px 15px;
+            margin-left: 10px;
             background: #007bff;
             color: #fff;
-            border-radius: 20px;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
         }
     </style>
 </head>
 <body>
-<div class="chat-container">
-<div class="chat-header">RutaSegura AI - Asistente de Vías</div>
-<div class="chat-body" id="chat"></div>
-<div class="chat-input">
-<input id="rutaInput" placeholder="Consulta una ruta (ej. Bogotá - Girardot)" type="text"/>
-<button id="consultarBtn">Consultar</button>
-</div>
-</div>
+    <div class="chat-container">
+        <div class="chat-header">RutaSegura AI - Asistente de Vías</div>
+        <div class="chat-body" id="chat"></div>
+        <div class="chat-input">
+            <input type="text" id="rutaInput" placeholder="Ej: Bogotá - Villavicencio">
+            <button onclick="consultarBloqueo()">Consultar</button>
+        </div>
+    </div>
 
-<script>
-const bloqueos = [
-    {
-        "departamento": "Cundinamarca",
-        "municipio": "La Mesa",
-        "tramo": "Bogotá - Girardot",
-        "estado": "Bloqueado",
-        "observaciones": "Manifestación campesina bloqueando ambos sentidos.",
-        "ruta_alterna": "Bogotá → Fusagasugá → Melgar → Girardot"
-    },
-    {
-        "departamento": "Valle del Cauca",
-        "municipio": "Buga",
-        "tramo": "Cali - Buenaventura",
-        "estado": "Paso restringido",
-        "observaciones": "Deslizamiento de tierra, paso habilitado solo para vehículos livianos.",
-        "ruta_alterna": "Cali → Palmira → Yotoco → Buenaventura"
-    },
-    {
-        "departamento": "Antioquia",
-        "municipio": "Yarumal",
-        "tramo": "Medellín - Costa Atlántica",
-        "estado": "Bloqueado",
-        "observaciones": "Bloqueo por accidente de camión cisterna.",
-        "ruta_alterna": "Medellín → Caucasia → Montería → Sincelejo"
-    }
-];
+    <script>
+        const bloqueos = [{"departamento": "Cundinamarca", "municipio": "La Mesa", "tramo": "Bogotá - Girardot", "estado": "Bloqueado", "observaciones": "Manifestación campesina bloqueando ambos sentidos."}, {"departamento": "Valle del Cauca", "municipio": "Buga", "tramo": "Cali - Buenaventura", "estado": "Paso restringido", "observaciones": "Deslizamiento de tierra, paso habilitado solo para vehículos livianos."}, {"departamento": "Antioquia", "municipio": "Yarumal", "tramo": "Medellín - Costa Atlántica", "estado": "Bloqueado", "observaciones": "Bloqueo por accidente de camión cisterna."}];
 
-function responderConsulta(ruta) {
-    const chat = document.getElementById("chat");
-    let respuesta = "🔍 No se encontraron bloqueos en la ruta consultada.";
-
-    for (const bloqueo of bloqueos) {
-        if (bloqueo.tramo.toLowerCase().includes(ruta.toLowerCase())) {
-            respuesta = `🚧 Bloqueo detectado en el tramo ${bloqueo.tramo} (${bloqueo.departamento}, ${bloqueo.municipio})\n📌 Estado: ${bloqueo.estado}\n📝 Observaciones: ${bloqueo.observaciones}\n🔁 Ruta alterna sugerida: ${bloqueo.ruta_alterna}`;
-            break;
+        function agregarMensaje(texto, clase) {
+            const chat = document.getElementById("chat");
+            const mensaje = document.createElement("div");
+            mensaje.className = "chat-message " + clase;
+            mensaje.textContent = texto;
+            chat.appendChild(mensaje);
+            chat.scrollTop = chat.scrollHeight;
         }
-    }
 
-    const userMsg = document.createElement("div");
-    userMsg.className = "chat-message user-message";
-    userMsg.textContent = "¿Hay bloqueos en la ruta " + ruta + "?";
-    chat.appendChild(userMsg);
+        function consultarBloqueo() {
+            const ruta = document.getElementById("rutaInput").value.trim();
+            if (!ruta) return;
 
-    const botMsg = document.createElement("div");
-    botMsg.className = "chat-message bot-message";
-    botMsg.textContent = respuesta;
-    chat.appendChild(botMsg);
+            agregarMensaje("¿Hay bloqueos en la ruta " + ruta + "?", "user-message");
 
-    chat.scrollTop = chat.scrollHeight;
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("consultarBtn").addEventListener("click", () => {
-        const rutaInput = document.getElementById("rutaInput").value;
-        if (rutaInput.trim() !== "") {
-            responderConsulta(rutaInput.trim());
+            let encontrado = false;
+            for (const b of bloqueos) {
+                if (b.tramo.toLowerCase().includes(ruta.toLowerCase())) {
+                    let respuesta = "🚧 Bloqueo detectado en el tramo: " + b.tramo + " (" + b.departamento + ", " + b.municipio + ")\n📌 Estado: " + b.estado + "\n📝 Observaciones: " + b.observaciones;
+                    if (b.ruta_alterna) {
+                        respuesta += "\n🔁 Ruta alterna sugerida: " + b.ruta_alterna;
+                    }
+                    agregarMensaje(respuesta, "bot-message");
+                    encontrado = true;
+                    break;
+                }
+            }
+            if (!encontrado) {
+                agregarMensaje("✅ No se reportan bloqueos en la ruta consultada.", "bot-message");
+            }
         }
-    });
-});
-</script>
-
+    </script>
 </body>
 </html>

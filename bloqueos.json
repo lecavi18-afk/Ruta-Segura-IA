@@ -1,0 +1,23 @@
+[
+    {
+        "departamento": "Cundinamarca",
+        "municipio": "La Mesa",
+        "tramo": "Bogotá - Girardot",
+        "estado": "Bloqueado",
+        "observaciones": "Manifestación campesina bloqueando ambos sentidos."
+    },
+    {
+        "departamento": "Valle del Cauca",
+        "municipio": "Buga",
+        "tramo": "Cali - Buenaventura",
+        "estado": "Paso restringido",
+        "observaciones": "Deslizamiento de tierra, paso habilitado solo para vehículos livianos."
+    },
+    {
+        "departamento": "Antioquia",
+        "municipio": "Yarumal",
+        "tramo": "Medellín - Costa Atlántica",
+        "estado": "Bloqueado",
+        "observaciones": "Bloqueo por accidente de camión cisterna."
+    }
+]
