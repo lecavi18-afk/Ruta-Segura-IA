@@ -7,130 +7,136 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #eef2f3;
+            background: #f4f4f4;
             margin: 0;
             padding: 0;
         }
         .chat-container {
-            width: 400px;
-            margin: 50px auto;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
+            max-width: 600px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
         .chat-header {
-            background-color: #007bff;
-            color: white;
+            background: #007bff;
+            color: #fff;
             padding: 15px;
             font-size: 18px;
-            font-weight: bold;
         }
         .chat-body {
-            padding: 15px;
-            height: 300px;
+            padding: 20px;
+            height: 400px;
             overflow-y: auto;
+            background: #f9f9f9;
         }
         .chat-message {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 20px;
+            max-width: 80%;
+            clear: both;
         }
         .user-message {
+            background: #dcf8c6;
+            float: right;
             text-align: right;
-            color: #333;
         }
         .bot-message {
-            text-align: left;
-            color: #007bff;
+            background: #e2e2e2;
+            float: left;
         }
-        .chat-footer {
+        .chat-input {
             display: flex;
             padding: 10px;
             border-top: 1px solid #ccc;
+            background: #fff;
         }
-        .chat-footer input {
+        .chat-input input {
             flex: 1;
-            padding: 8px;
+            padding: 10px;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 20px;
+            margin-right: 10px;
         }
-        .chat-footer button {
-            margin-left: 5px;
-            padding: 8px 12px;
-            background-color: #007bff;
-            color: white;
+        .chat-input button {
+            padding: 10px 20px;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
-        }
-        .action-buttons button {
-            margin: 0 5px;
-            padding: 5px 10px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
+            background: #007bff;
+            color: #fff;
+            border-radius: 20px;
             cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div class="chat-container">
-        <div class="chat-header">RutaSegura AI</div>
-        <div class="chat-body" id="chatBody">
-            <div class="chat-message bot-message">🚧 Se reporta un bloqueo en la vía a la altura de Buga.</div>
-            <div class="chat-message bot-message">🔁 Ruta alterna sugerida: Bogotá → Ibagué → Armenia → Cali</div>
-            <div class="chat-message bot-message">🕒 Tiempo estimado adicional: +1h 45min</div>
-            <div class="chat-message bot-message">¿Deseas recibir alertas en tiempo real durante el trayecto?</div>
-            <div class="action-buttons">
-                <button onclick="sendBotResponse('Sí, activar alertas en tiempo real.')">Sí</button>
-                <button onclick="sendBotResponse('No, continuar sin alertas.')">No</button>
-            </div>
-        </div>
-        <div class="chat-footer">
-            <input type="text" id="userInput" placeholder="Escribe tu mensaje aquí...">
-            <button onclick="sendMessage()">Enviar</button>
+        <div class="chat-header">RutaSegura AI - Asistente de Vías</div>
+        <div class="chat-body" id="chat"></div>
+        <div class="chat-input">
+            <input type="text" id="rutaInput" placeholder="Consulta una ruta (ej. Bogotá - Girardot)">
+            <button id="consultarBtn">Consultar</button>
         </div>
     </div>
 
     <script>
-        function sendMessage() {
-            const input = document.getElementById('userInput');
-            const message = input.value.trim();
-            if (message === '') return;
+    const bloqueos = [
+        {
+            "departamento": "Cundinamarca",
+            "municipio": "La Mesa",
+            "tramo": "Bogotá - Girardot",
+            "estado": "Bloqueado",
+            "observaciones": "Manifestación campesina bloqueando ambos sentidos."
+        },
+        {
+            "departamento": "Valle del Cauca",
+            "municipio": "Buga",
+            "tramo": "Cali - Buenaventura",
+            "estado": "Paso restringido",
+            "observaciones": "Deslizamiento de tierra, paso habilitado solo para vehículos livianos."
+        },
+        {
+            "departamento": "Antioquia",
+            "municipio": "Yarumal",
+            "tramo": "Medellín - Costa Atlántica",
+            "estado": "Bloqueado",
+            "observaciones": "Bloqueo por accidente de camión cisterna."
+        }
+    ];
 
-            const chatBody = document.getElementById('chatBody');
-            const userMsg = document.createElement('div');
-            userMsg.className = 'chat-message user-message';
-            userMsg.textContent = message;
-            chatBody.appendChild(userMsg);
+    function responderConsulta(ruta) {
+        const chat = document.getElementById("chat");
+        let respuesta = "🔍 No se encontraron bloqueos en la ruta consultada.";
 
-            input.value = '';
-            chatBody.scrollTop = chatBody.scrollHeight;
-
-            setTimeout(() => {
-                const botMsg = document.createElement('div');
-                botMsg.className = 'chat-message bot-message';
-                botMsg.textContent = 'Gracias por tu mensaje. Estamos procesando la información de bloqueos en tu ruta...';
-                chatBody.appendChild(botMsg);
-                chatBody.scrollTop = chatBody.scrollHeight;
-            }, 1000);
+        for (const bloqueo of bloqueos) {
+            if (bloqueo.tramo.toLowerCase().includes(ruta.toLowerCase())) {
+                respuesta = `🚧 Bloqueo detectado en el tramo ${bloqueo.tramo} (${bloqueo.departamento}, ${bloqueo.municipio})\n📌 Estado: ${bloqueo.estado}\n📝 Observaciones: ${bloqueo.observaciones}`;
+                break;
+            }
         }
 
-        function sendBotResponse(response) {
-            const chatBody = document.getElementById('chatBody');
-            const botMsg = document.createElement('div');
-            botMsg.className = 'chat-message bot-message';
-            botMsg.textContent = response;
-            chatBody.appendChild(botMsg);
-            chatBody.scrollTop = chatBody.scrollHeight;
-        }
+        const userMsg = document.createElement("div");
+        userMsg.className = "chat-message user-message";
+        userMsg.textContent = "¿Hay bloqueos en la ruta " + ruta + "?";
+        chat.appendChild(userMsg);
+
+        const botMsg = document.createElement("div");
+        botMsg.className = "chat-message bot-message";
+        botMsg.textContent = respuesta;
+        chat.appendChild(botMsg);
+
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("consultarBtn").addEventListener("click", () => {
+            const rutaInput = document.getElementById("rutaInput").value;
+            if (rutaInput.trim() !== "") {
+                responderConsulta(rutaInput.trim());
+            }
+        });
+    });
     </script>
 </body>
 </html>
